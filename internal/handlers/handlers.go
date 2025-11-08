@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/auth"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/models"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/repo"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
 	"regexp"
 	"time"
 
@@ -28,12 +28,12 @@ func LoginHandler(c *fiber.Ctx) error {
 }
 
 func CreateSMS(c *fiber.Ctx) error {
-	var s models.SMS
+	var s entity.SMS
 	if err := c.BodyParser(&s); err != nil {
 		return fiber.ErrBadRequest
 	}
 	s.Status = "pending"
-	if err := repo.UpsertSMS(&s); err != nil {
+	if err := repository.UpsertSMS(&s); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.Status(201).JSON(s)
@@ -41,7 +41,7 @@ func CreateSMS(c *fiber.Ctx) error {
 
 func GetSMS(c *fiber.Ctx) error {
 	id := c.Params("id")
-	s, err := repo.GetSMSByID(id)
+	s, err := repository.GetSMSByID(id)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "not found"})
 	}
@@ -49,7 +49,7 @@ func GetSMS(c *fiber.Ctx) error {
 }
 
 func ListSMS(c *fiber.Ctx) error {
-	sms, err := repo.ListSMSes(100)
+	sms, err := repository.ListSMSes(100)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -57,14 +57,14 @@ func ListSMS(c *fiber.Ctx) error {
 }
 
 func CreateRule(c *fiber.Ctx) error {
-	var r models.Rule
+	var r entity.Rule
 	if err := c.BodyParser(&r); err != nil {
 		return fiber.ErrBadRequest
 	}
 	if r.Action != "allow" && r.Action != "deny" {
 		r.Action = "deny"
 	}
-	if err := repo.UpsertRule(&r); err != nil {
+	if err := repository.UpsertRule(&r); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
 	return c.Status(201).JSON(r)
@@ -72,7 +72,7 @@ func CreateRule(c *fiber.Ctx) error {
 
 func GetRule(c *fiber.Ctx) error {
 	id := c.Params("id")
-	r, err := repo.GetRuleByID(id)
+	r, err := repository.GetRuleByID(id)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "not found"})
 	}
@@ -80,7 +80,7 @@ func GetRule(c *fiber.Ctx) error {
 }
 
 func ListRules(c *fiber.Ctx) error {
-	rules, err := repo.ListRules(100)
+	rules, err := repository.ListRules(100)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -88,16 +88,16 @@ func ListRules(c *fiber.Ctx) error {
 }
 
 func EvaluateSMS(c *fiber.Ctx) error {
-	var s models.SMS
+	var s entity.SMS
 	if err := c.BodyParser(&s); err != nil {
 		return fiber.ErrBadRequest
 	}
 	// Load rules
-	rules, err := repo.GetAllRules()
+	rules, err := repository.GetAllRules()
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}
-	res := models.EvaluationResult{Allowed: true}
+	res := entity.EvaluationResult{Allowed: true}
 	for _, r := range rules {
 		matched := false
 		// sender match
@@ -144,6 +144,6 @@ func EvaluateSMS(c *fiber.Ctx) error {
 	} else {
 		s.Status = "blocked"
 	}
-	_ = repo.UpsertSMS(&s)
+	_ = repository.UpsertSMS(&s)
 	return c.JSON(res)
 }

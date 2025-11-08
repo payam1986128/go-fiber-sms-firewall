@@ -1,16 +1,20 @@
-package repo
+package repository
 
 import (
 	"fmt"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/db"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/models"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
 	"time"
 
 	"github.com/couchbase/gocb/v2"
 	"github.com/google/uuid"
 )
 
-func UpsertSMS(s *models.SMS) error {
+func FindActiveLimiterConditions() []entity.LimiterCondition {
+
+}
+
+func UpsertSMS(s *entity.SMS) error {
 	if s.ID == "" {
 		s.ID = uuid.NewString()
 	}
@@ -22,20 +26,20 @@ func UpsertSMS(s *models.SMS) error {
 	return err
 }
 
-func GetSMSByID(id string) (*models.SMS, error) {
+func GetSMSByID(id string) (*entity.SMS, error) {
 	key := "sms::" + id
 	get, err := db.Collection.Get(key, nil)
 	if err != nil {
 		return nil, err
 	}
-	var s models.SMS
+	var s entity.SMS
 	if err := get.Content(&s); err != nil {
 		return nil, err
 	}
 	return &s, nil
 }
 
-func ListSMSes(limit int) ([]models.SMS, error) {
+func ListSMSes(limit int) ([]entity.SMS, error) {
 	if limit <= 0 {
 		limit = 50
 	}
@@ -44,9 +48,9 @@ func ListSMSes(limit int) ([]models.SMS, error) {
 	if err != nil {
 		return nil, err
 	}
-	var res []models.SMS
+	var res []entity.SMS
 	for rows.Next() {
-		var r models.SMS
+		var r entity.SMS
 		if err := rows.Row(&r); err != nil {
 			return nil, err
 		}
@@ -55,7 +59,7 @@ func ListSMSes(limit int) ([]models.SMS, error) {
 	return res, nil
 }
 
-func UpsertRule(r *models.Rule) error {
+func UpsertRule(r *entity.Rule) error {
 	if r.ID == "" {
 		r.ID = uuid.New().String()
 	}
@@ -67,20 +71,20 @@ func UpsertRule(r *models.Rule) error {
 	return err
 }
 
-func GetRuleByID(id string) (*models.Rule, error) {
+func GetRuleByID(id string) (*entity.Rule, error) {
 	key := "rule::" + id
 	get, err := db.Collection.Get(key, nil)
 	if err != nil {
 		return nil, err
 	}
-	var r models.Rule
+	var r entity.Rule
 	if err := get.Content(&r); err != nil {
 		return nil, err
 	}
 	return &r, nil
 }
 
-func ListRules(limit int) ([]models.Rule, error) {
+func ListRules(limit int) ([]entity.Rule, error) {
 	if limit <= 0 {
 		limit = 100
 	}
@@ -89,9 +93,9 @@ func ListRules(limit int) ([]models.Rule, error) {
 	if err != nil {
 		return nil, err
 	}
-	var res []models.Rule
+	var res []entity.Rule
 	for rows.Next() {
-		var r models.Rule
+		var r entity.Rule
 		if err := rows.Row(&r); err != nil {
 			return nil, err
 		}
@@ -101,6 +105,6 @@ func ListRules(limit int) ([]models.Rule, error) {
 }
 
 // Basic search for matching rules in memory. For large scale, push evaluation into queries
-func GetAllRules() ([]models.Rule, error) {
+func GetAllRules() ([]entity.Rule, error) {
 	return ListRules(1000)
 }

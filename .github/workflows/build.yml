@@ -1,0 +1,45 @@
+name: Build SMS Firewall application based on go lang
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      # Step 3
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      # Step 4
+      - name: Install dependencies
+        run: go mod download
+
+      # Step 5
+      - name: Build
+        run: go build -v ./...
+
+      # Step 6
+      - name: Test
+        run: go test -v ./...
