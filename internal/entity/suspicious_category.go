@@ -6,7 +6,7 @@ import (
 )
 
 type SuspiciousCategory struct {
-	ID       uuid.UUID
+	ID       uuid.UUID `bson:"_id"`
 	name     string
 	DateTime time.Time
 	Words    []string
