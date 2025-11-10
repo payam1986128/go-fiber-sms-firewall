@@ -11,7 +11,6 @@ import (
 var (
 	Cluster    *gocb.Cluster
 	Bucket     *gocb.Bucket
-	Collection *gocb.Collection
 )
 
 func InitCouchbase() error {
@@ -31,13 +30,11 @@ func InitCouchbase() error {
 	}
 
 	Bucket = Cluster.Bucket(bucketName)
-	// wait until Bucket ready
 	err = Bucket.WaitUntilReady(10*time.Second, nil)
 	if err != nil {
 		return err
 	}
 
-	Collection = Bucket.DefaultCollection()
 	return nil
 }
 
