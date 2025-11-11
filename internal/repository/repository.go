@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/db"
+	"github.com/couchbase/gocb/v2"
 )
 
 var (
@@ -12,8 +12,8 @@ var (
 	userCollection                 = "users"
 )
 
-func countByQuery(query string) (int, error) {
-	data, err := db.Cluster.Query(query, nil)
+func countByQuery(cluster *gocb.Cluster, query string) (int, error) {
+	data, err := cluster.Query(query, nil)
 	if err != nil {
 		return 0, err
 	}

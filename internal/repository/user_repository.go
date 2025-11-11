@@ -2,14 +2,27 @@ package repository
 
 import (
 	"fmt"
+	"github.com/couchbase/gocb/v2"
 	"github.com/google/uuid"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/db"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
 )
 
-func FindUserByUsername(username string) (*entity.User, error) {
-	query := fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` WHERE username = %s", db.Bucket.Name(), userCollection, username)
-	data, err := db.Cluster.Query(query, nil)
+type UserRepository struct {
+	cluster    *gocb.Cluster
+	collection *gocb.Collection
+}
+
+func NewUserRepository(config *config.CouchbaseConfig) *UserRepository {
+	return &UserRepository{
+		cluster:    config.Cluster,
+		collection: config.Bucket.Collection(userCollection),
+	}
+}
+
+func (repo *UserRepository) FindUserByUsername(username string) (*entity.User, error) {
+	query := fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` WHERE username = %s", repo.collection.Name(), userCollection, username)
+	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -25,9 +38,9 @@ func FindUserByUsername(username string) (*entity.User, error) {
 	return &user, nil
 }
 
-func AddUser(user *entity.User) (uuid.UUID, error) {
+func (repo *UserRepository) AddUser(user *entity.User) (uuid.UUID, error) {
 	user.ID = uuid.New()
 	user.Active = true
-	_, err := db.Bucket.Collection(userCollection).Insert(user.ID.String(), user, nil)
+	_, err := repo.collection.Insert(user.ID.String(), user, nil)
 	return user.ID, err
 }
