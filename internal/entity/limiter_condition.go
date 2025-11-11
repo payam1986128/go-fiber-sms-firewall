@@ -7,41 +7,41 @@ import (
 
 type (
 	LimiterCondition struct {
-		ID          uuid.UUID `bson:"_id"`
-		Name        string
-		Priority    int
-		Active      bool
-		CreatedTime time.Time
-		TimeLimits  []TimeLimit
-		Filters     Filters
-		Action      Action
+		ID          uuid.UUID   `bson:"_id"`
+		Name        string      `bson:"name"`
+		Priority    int         `bson:"priority"`
+		Active      bool        `bson:"active"`
+		CreatedTime time.Time   `bson:"createdTime"`
+		TimeLimits  []TimeLimit `bson:"timeLimits"`
+		Filters     Filters     `bson:"filters"`
+		Action      Action      `bson:"action"`
 	}
 
 	Filters struct {
-		Keyword   *KeywordsFilter
-		Sender    *SendersFilter
-		Receivers []string
+		Keyword   *KeywordsFilter `bson:"keyword"`
+		Sender    *SendersFilter  `bson:"sender"`
+		Receivers []string        `bson:"receivers"`
 	}
 
 	KeywordsFilter struct {
-		Keywords         []string
-		Categories       []uuid.UUID
-		CategoryKeywords []string
-		Regexes          []string
+		Keywords         []string    `bson:"keywords"`
+		Categories       []uuid.UUID `bson:"categories"`
+		CategoryKeywords []string    `bson:"categoryKeywords"`
+		Regexes          []string    `bson:"regexes"`
 	}
 
 	SendersFilter struct {
-		Senders []string
-		Rate    *RateFilter
+		Senders []string    `bson:"senders"`
+		Rate    *RateFilter `bson:"rate"`
 	}
 
 	RateFilter struct {
-		IntervalMinutes int
-		Threshold       int
+		IntervalMinutes int `bson:"intervalMinutes"`
+		Threshold       int `bson:"threshold"`
 	}
 
 	TimeLimit struct {
-		From *time.Time
-		To   time.Time
+		From *time.Time `bson:"from"`
+		To   time.Time  `bson:"to"`
 	}
 )

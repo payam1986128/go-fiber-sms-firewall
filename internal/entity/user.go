@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type User struct {
 	ID       uuid.UUID `bson:"_id"`
-	Username string
-	Password string
-	Active   bool
+	Username string    `bson:"username"`
+	Password string    `bson:"password"`
+	Active   bool      `bson:"active"`
 }
