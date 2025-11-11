@@ -2,12 +2,11 @@ package entity
 
 import (
 	"github.com/google/uuid"
-	"time"
 )
 
 type SuspiciousCategory struct {
 	ID       uuid.UUID `bson:"_id"`
-	name     string
-	DateTime time.Time
+	Name     string
+	DateTime string
 	Words    []string
 }
