@@ -12,7 +12,7 @@ type (
 		Sender          string        `json:"sender"`
 		Receiver        string        `json:"receiver"`
 		Message         string        `json:"message"`
-		AppliedFilterID uuid.UUID     `json:"appliedFilterId"`
+		AppliedFilterID string        `json:"appliedFilterId"`
 		ReceivedTime    time.Time     `json:"receivedTime"`
 		EvaluatedTime   time.Time     `json:"evaluatedTime"`
 		SendTime        time.Time     `json:"sendTime"`
@@ -20,6 +20,8 @@ type (
 	}
 
 	SmsFilterRequest struct {
+		Pageable
+		Sortable
 		Sender   string        `json:"sender"`
 		Receiver string        `json:"receiver"`
 		DateFrom time.Time     `json:"dateFrom"`

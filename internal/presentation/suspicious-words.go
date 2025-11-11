@@ -1,27 +1,24 @@
 package presentation
 
-import "time"
-
 type (
-	SuspiciousCategoriesFilterRequest struct {
-		Name string `json:"name"`
-		Word string `json:"word"`
+	SuspiciousWordDto struct {
+		ID       string `json:"id"`
+		Word     string `json:"word"`
+		DateTime string `json:"dateTime"`
 	}
 
-	SuspiciousCategoriesResponse struct {
-		Categories []SuspiciousCategoryDto `json:"categories"`
-		Count      int                     `json:"count"`
+	SuspiciousWordsFilterRequest struct {
+		Pageable
+		Sortable
+		Filter string `json:"filter"`
 	}
 
-	SuspiciousCategoryDto struct {
-		ID       string              `json:"id"`
-		Name     string              `json:"name"`
-		DateTime time.Time           `json:"dateTime"`
-		Words    map[string]struct{} `json:"words"`
+	SuspiciousWordsRequest struct {
+		Words []string `json:"words"`
 	}
 
-	SuspiciousCategoryWordsRequest struct {
-		Name  string              `json:"name"`
-		Words map[string]struct{} `json:"words"`
+	SuspiciousWordsResponse struct {
+		Words []SuspiciousWordDto `json:"words"`
+		Count int                 `json:"count"`
 	}
 )

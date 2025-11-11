@@ -8,9 +8,9 @@ import (
 
 type (
 	BriefLimiterConditionDto struct {
-		ID          uuid.UUID      `json:"id"`
+		ID          string         `json:"id"`
 		Name        string         `json:"name"`
-		CreatedTime time.Time      `json:"createdTime"`
+		CreatedTime string         `json:"createdTime"`
 		Priority    int            `json:"priority"`
 		TimeLimits  []TimeLimitDto `json:"timeLimits"`
 	}
@@ -21,23 +21,23 @@ type (
 	}
 
 	FiltersDto struct {
-		Keyword   KeywordFiltersDto `json:"keyword"`
-		Sender    SenderFiltersDto  `json:"sender"`
-		Receivers []string          `json:"receivers"`
+		Keyword   *KeywordsFilterDto `json:"keyword"`
+		Sender    *SendersFilterDto  `json:"sender"`
+		Receivers []string           `json:"receivers"`
 	}
 
-	KeywordFiltersDto struct {
+	KeywordsFilterDto struct {
 		Keywords   []string    `json:"keywords"`
 		Categories []uuid.UUID `json:"categories"`
 		Regexes    []string    `json:"regexes"`
 	}
 
-	SenderFiltersDto struct {
+	SendersFilterDto struct {
 		Senders []string       `json:"senders"`
-		Rate    RateFiltersDto `json:"rate"`
+		Rate    *RateFilterDto `json:"rate"`
 	}
 
-	RateFiltersDto struct {
+	RateFilterDto struct {
 		IntervalMinutes int `json:"intervalMinutes"`
 		Threshold       int `json:"threshold"`
 	}
@@ -61,6 +61,8 @@ type (
 	}
 
 	LimiterConditionsFilterRequest struct {
+		Pageable
+		Sortable
 		State  bool   `json:"state"`
 		Filter string `json:"filter"`
 	}
