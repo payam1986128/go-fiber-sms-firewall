@@ -1,10 +1,6 @@
 package presentation
 
 type (
-	ErrorDto struct {
-		Message string `json:"message"`
-	}
-
 	Pageable struct {
 		Page     int `json:"page"`
 		PageSize int `json:"pageSize"`
@@ -12,10 +8,6 @@ type (
 
 	Sortable struct {
 		Sort string `json:"sort"`
-	}
-
-	SuccessfulCreationDto struct {
-		ID string `json:"string"`
 	}
 
 	ValidationErrorDto struct {

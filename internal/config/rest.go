@@ -26,12 +26,17 @@ func InitFiber(config *CouchbaseConfig) {
 	limiterConditionService := service.NewLimiterConditionService(limiterConditionRepository)
 	suspiciousWordService := service.NewSuspiciousWordService(suspiciousWordRepository)
 	suspiciousCategoryService := service.NewSuspiciousCategoryService(suspiciousCategoryRepository)
+	phoneNumberService := service.NewPhoneNumberService()
+	transceiverService := service.NewTransceiverService(smsRepository, phoneNumberService)
+	rateLimiterService := service.NewRateLimiterService(smsRepository)
+	firewallService := service.NewFirewallService(smsRepository, rateLimiterService, limiterConditionService)
 
 	userHandler := handler.NewUserHandler(userService)
 	smsHandler := handler.NewSmsHandler(smsService)
 	limiterConditionHandler := handler.NewLimiterConditionHandler(limiterConditionService)
 	suspiciousWordHandler := handler.NewSuspiciousWordHandler(suspiciousWordService)
 	suspiciousCategoryHandler := handler.NewSuspiciousCategoryHandler(suspiciousCategoryService)
+	firewallHandler := handler.NewFirewallHandler(firewallService, transceiverService)
 
 	app.Post("/login", userHandler.LoginHandler)
 
@@ -42,7 +47,7 @@ func InitFiber(config *CouchbaseConfig) {
 	}
 	secure := app.Group("/api", jwtware.New(jwtware.Config{SigningKey: []byte(jwtSecret)}))
 
-	secure.Post("/sms", handler.Protect)
+	secure.Post("/sms", firewallHandler.Receive)
 
 	port := os.Getenv("PORT")
 	if port == "" {
