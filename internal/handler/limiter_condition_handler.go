@@ -104,5 +104,5 @@ func (handler *LimiterConditionHandler) GetCaughtSms(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
-	return ctx.Status(fiber.StatusNoContent).JSON(&response)
+	return ctx.Status(fiber.StatusOK).JSON(&response)
 }

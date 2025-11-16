@@ -1,6 +1,9 @@
 package service
 
-import "github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
+import (
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/presentation"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
+)
 
 type UserService struct {
 	repository *repository.UserRepository
@@ -10,4 +13,12 @@ func NewUserService(repository *repository.UserRepository) *UserService {
 	return &UserService{
 		repository: repository,
 	}
+}
+
+func (service *UserService) RegisterUser(request *presentation.RegisterUserRequest, code string) (string, error) {
+	return "", nil
+}
+
+func (service *UserService) LoginUser(username string, password string) (*presentation.VerificationResponse, error) {
+	return nil, nil
 }

@@ -38,7 +38,8 @@ func InitFiber(config *CouchbaseConfig) {
 	suspiciousCategoryHandler := handler.NewSuspiciousCategoryHandler(suspiciousCategoryService)
 	firewallHandler := handler.NewFirewallHandler(firewallService, transceiverService)
 
-	app.Post("/login", userHandler.LoginHandler)
+	app.Post("/api/bo/users", userHandler.Register)
+	app.Post("/login", userHandler.Login)
 
 	// secure group
 	jwtSecret := os.Getenv("JWT_SECRET")
@@ -47,7 +48,26 @@ func InitFiber(config *CouchbaseConfig) {
 	}
 	secure := app.Group("/api", jwtware.New(jwtware.Config{SigningKey: []byte(jwtSecret)}))
 
-	secure.Post("/sms", firewallHandler.Receive)
+	secure.Post("/protections", firewallHandler.Receive)
+
+	secure.Get("/bo/limiter-conditions", limiterConditionHandler.GetLimiterConditions)
+	secure.Get("/bo/limiter-conditions/:id", limiterConditionHandler.GetLimiterCondition)
+	secure.Post("/bo/limiter-conditions", limiterConditionHandler.AddLimiterCondition)
+	secure.Put("/bo/limiter-conditions/:id", limiterConditionHandler.EditLimiterCondition)
+	secure.Put("/bo/limiter-conditions/state", limiterConditionHandler.ReviewLimiterCondition)
+	secure.Delete("/bo/limiter-conditions/:id", limiterConditionHandler.DeleteLimiterCondition)
+	secure.Delete("/bo/limiter-conditions/:id/sms", limiterConditionHandler.GetCaughtSms)
+
+	secure.Get("/bo/sms", smsHandler.GetSms)
+
+	secure.Get("/bo/suspicious-categories", suspiciousCategoryHandler.GetSuspiciousCategories)
+	secure.Post("/bo/suspicious-categories", suspiciousCategoryHandler.AddSuspiciousCategory)
+	secure.Put("/bo/suspicious-categories/:id", suspiciousCategoryHandler.EditSuspiciousCategory)
+	secure.Delete("/bo/suspicious-categories/:id", suspiciousCategoryHandler.DeleteSuspiciousCategory)
+
+	secure.Get("/bo/suspicious-words", suspiciousWordHandler.GetSuspiciousWords)
+	secure.Post("/bo/suspicious-words", suspiciousWordHandler.AddSuspiciousWords)
+	secure.Delete("/bo/suspicious-words/:id", suspiciousWordHandler.DeleteSuspiciousWords)
 
 	port := os.Getenv("PORT")
 	if port == "" {
