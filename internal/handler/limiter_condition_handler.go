@@ -16,7 +16,7 @@ func NewLimiterConditionHandler(service *service.LimiterConditionService) *Limit
 }
 
 func (handler *LimiterConditionHandler) GetLimiterConditions(ctx *fiber.Ctx) error {
-	var request presentation.LimiterConditionsFilterRequest
+	var request presentation.LimiterConditionsSearchRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
@@ -44,6 +44,11 @@ func (handler *LimiterConditionHandler) AddLimiterCondition(ctx *fiber.Ctx) erro
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
+	}
 	id, err := handler.service.AddLimiterCondition(&request)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
@@ -60,6 +65,11 @@ func (handler *LimiterConditionHandler) EditLimiterCondition(ctx *fiber.Ctx) err
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
+	}
 	err := handler.service.EditLimiterCondition(id, &request)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
@@ -71,6 +81,11 @@ func (handler *LimiterConditionHandler) ReviewLimiterCondition(ctx *fiber.Ctx) e
 	var request presentation.LimiterConditionStateRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
+	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
 	}
 	err := handler.service.ReviewLimiterCondition(&request)
 	if err != nil {
@@ -96,7 +111,7 @@ func (handler *LimiterConditionHandler) GetCaughtSms(ctx *fiber.Ctx) error {
 	if err := uuid.Validate(id); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid id"})
 	}
-	var request presentation.SmsFilterRequest
+	var request presentation.SmsSearchRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}

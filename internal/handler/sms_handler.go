@@ -15,7 +15,7 @@ func NewSmsHandler(service *service.SmsService) *SmsHandler {
 }
 
 func (handler *SmsHandler) GetSms(ctx *fiber.Ctx) error {
-	var request presentation.SmsFilterRequest
+	var request presentation.SmsSearchRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}

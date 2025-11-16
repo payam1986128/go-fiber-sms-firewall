@@ -13,6 +13,6 @@ func NewSmsService(repository *repository.SmsRepository) *SmsService {
 	return &SmsService{repository: repository}
 }
 
-func (service SmsService) GetSms(request *presentation.SmsFilterRequest) (*presentation.SmsResponse, error) {
+func (service SmsService) GetSms(request *presentation.SmsSearchRequest) (*presentation.SmsResponse, error) {
 	return nil, nil
 }

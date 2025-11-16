@@ -19,7 +19,7 @@ type (
 		Action          entity.Action `json:"action"`
 	}
 
-	SmsFilterRequest struct {
+	SmsSearchRequest struct {
 		Pageable
 		Sortable
 		Sender   string        `json:"sender"`
@@ -44,8 +44,8 @@ type (
 	}
 
 	SmsStateRequest struct {
-		IDs      []uuid.UUID `json:"ids"`
-		Accepted bool        `json:"accepted"`
+		IDs      []uuid.UUID `json:"ids" validate:"required"`
+		Accepted bool        `json:"accepted" validate:"required"`
 	}
 
 	SmsTime struct {

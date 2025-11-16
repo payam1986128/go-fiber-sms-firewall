@@ -16,7 +16,7 @@ func NewSuspiciousCategoryHandler(service *service.SuspiciousCategoryService) *S
 }
 
 func (handler *SuspiciousCategoryHandler) GetSuspiciousCategories(ctx *fiber.Ctx) error {
-	var request presentation.SuspiciousCategoriesFilterRequest
+	var request presentation.SuspiciousCategoriesSearchRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
@@ -31,6 +31,11 @@ func (handler *SuspiciousCategoryHandler) AddSuspiciousCategory(ctx *fiber.Ctx) 
 	var request presentation.SuspiciousCategoryWordsRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
+	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
 	}
 	id, err := handler.service.AddSuspiciousCategory(&request)
 	if err != nil {
@@ -47,6 +52,11 @@ func (handler *SuspiciousCategoryHandler) EditSuspiciousCategory(ctx *fiber.Ctx)
 	var request presentation.SuspiciousCategoryWordsRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
+	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
 	}
 	err := handler.service.EditSuspiciousCategory(id, &request)
 	if err != nil {

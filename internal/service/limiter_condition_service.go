@@ -13,7 +13,7 @@ func NewLimiterConditionService(repository *repository.LimiterConditionRepositor
 	return &LimiterConditionService{repository: repository}
 }
 
-func (service *LimiterConditionService) GetLimiterConditions(request *presentation.LimiterConditionsFilterRequest) (*presentation.LimiterConditionsResponse, error) {
+func (service *LimiterConditionService) GetLimiterConditions(request *presentation.LimiterConditionsSearchRequest) (*presentation.LimiterConditionsResponse, error) {
 	return nil, nil
 }
 
@@ -37,6 +37,6 @@ func (service *LimiterConditionService) DeleteLimiterCondition(id string) error 
 	return nil
 }
 
-func (service *LimiterConditionService) GetCaughtSms(id string, request *presentation.SmsFilterRequest) (*presentation.SmsResponse, error) {
+func (service *LimiterConditionService) GetCaughtSms(id string, request *presentation.SmsSearchRequest) (*presentation.SmsResponse, error) {
 	return nil, nil
 }

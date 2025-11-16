@@ -23,6 +23,11 @@ func (handler *UserHandler) Register(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
+	}
 	id, err := handler.service.RegisterUser(&request, code)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
@@ -39,7 +44,12 @@ func (handler *UserHandler) Login(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
-	response, err := handler.service.LoginUser(request.Username, code)
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
+	}
+	response, err := handler.service.LoginUser(*request.Username, code)
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": err.Error()})
 	}

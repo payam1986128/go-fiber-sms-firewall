@@ -13,7 +13,7 @@ func NewSuspiciousCategoryService(repository *repository.SuspiciousCategoryRepos
 	return &SuspiciousCategoryService{repository: repository}
 }
 
-func (service SuspiciousCategoryService) GetSuspiciousCategories(request *presentation.SuspiciousCategoriesFilterRequest) (*presentation.SuspiciousCategoriesResponse, error) {
+func (service SuspiciousCategoryService) GetSuspiciousCategories(request *presentation.SuspiciousCategoriesSearchRequest) (*presentation.SuspiciousCategoriesResponse, error) {
 	return nil, nil
 }
 

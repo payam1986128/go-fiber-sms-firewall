@@ -1,9 +1,12 @@
 package presentation
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 type (
-	SuspiciousCategoriesFilterRequest struct {
+	SuspiciousCategoriesSearchRequest struct {
 		Pageable
 		Sortable
 		Name string `json:"name"`
@@ -23,7 +26,17 @@ type (
 	}
 
 	SuspiciousCategoryWordsRequest struct {
-		Name  string   `json:"name"`
-		Words []string `json:"words"`
+		Name  *string  `json:"name" validate:"required"`
+		Words []string `json:"words" validate:"required"`
 	}
 )
+
+func (req *SuspiciousCategoryWordsRequest) Validate() error {
+	if req.Name == nil {
+		return errors.New("name is required")
+	}
+	if req.Words == nil || len(req.Words) == 0 {
+		return errors.New("words is required")
+	}
+	return nil
+}

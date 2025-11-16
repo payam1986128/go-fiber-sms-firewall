@@ -32,6 +32,11 @@ func (handler *SuspiciousWordHandler) AddSuspiciousWords(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "invalid request"})
 	}
+	if err := request.Validate(); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&presentation.ValidationErrorDto{
+			Message: err.Error(),
+		})
+	}
 	id, err := handler.service.AddSuspiciousWords(&request)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
