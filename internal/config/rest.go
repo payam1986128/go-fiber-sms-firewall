@@ -26,7 +26,7 @@ func InitFiber(config *CouchbaseConfig) {
 	suspiciousWordService := service.NewSuspiciousWordService(suspiciousWordRepository)
 	suspiciousCategoryService := service.NewSuspiciousCategoryService(suspiciousCategoryRepository)
 	phoneNumberService := service.NewPhoneNumberService()
-	transceiverService := service.NewTransceiverService(smsRepository, phoneNumberService)
+	transceiverService := service.NewTransceiverService(smsRepository, phoneNumberService, NewSmscClient())
 	rateLimiterService := service.NewRateLimiterService(smsRepository)
 	firewallService := service.NewFirewallService(smsRepository, rateLimiterService, limiterConditionService)
 

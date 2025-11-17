@@ -5,16 +5,20 @@ go 1.25
 require (
 	github.com/couchbase/gocb/v2 v2.11.1
 	github.com/gofiber/fiber/v2 v2.52.9
-	github.com/gofiber/jwt/v3 v3.3.10
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.44.0
+	github.com/go-resty/resty/v2 v2.16.5
 )
 
-replace golang.org/x/crypto v0.44.0 => F:\libs\crypto
+replace (
+	golang.org/x/crypto v0.44.0 => F:\libs\crypto
+	golang.org/x/time v0.14.0 => F:\libs\time
+)
 
 require (
+	golang.org/x/time v0.14.0
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/couchbase/gocbcore/v10 v10.8.1 // indirect
 	github.com/couchbase/gocbcoreps v0.1.4 // indirect

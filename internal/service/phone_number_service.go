@@ -17,17 +17,15 @@ func NewPhoneNumberService() *PhoneNumberService {
 	return service
 }
 
-func (service *PhoneNumberService) normalizePhoneNumber(phoneNumber *string) *string {
-	if phoneNumber == nil || len(*phoneNumber) == 0 {
-		return nil
+func (service *PhoneNumberService) normalizePhoneNumber(phoneNumber *string) {
+	if phoneNumber != nil && len(*phoneNumber) > 0 {
+		if strings.HasPrefix(*phoneNumber, "00") {
+			*phoneNumber = strings.Replace(*phoneNumber, "00", "+", 1)
+		}
+		if strings.HasPrefix(*phoneNumber, "0") {
+			*phoneNumber = strings.Replace(*phoneNumber, "0", service.countryCode, 1)
+		}
 	}
-	if strings.HasPrefix(*phoneNumber, "00") {
-		strings.Replace(*phoneNumber, "00", "+", 1)
-	}
-	if strings.HasPrefix(*phoneNumber, "0") {
-		strings.Replace(*phoneNumber, "0", service.countryCode, 1)
-	}
-	return phoneNumber
 }
 
 func (service *PhoneNumberService) normalizeCountryCode() {

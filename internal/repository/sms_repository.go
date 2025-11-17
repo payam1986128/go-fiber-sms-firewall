@@ -57,3 +57,8 @@ func (repo *SmsRepository) AddSms(sms *entity.Sms) (uuid.UUID, error) {
 	_, err := repo.collection.Insert(sms.ID.String(), sms, nil)
 	return sms.ID, err
 }
+
+func (repo *SmsRepository) UpdateSms(sms *entity.Sms) error {
+	_, err := repo.collection.Replace(sms.ID.String(), sms, nil)
+	return err
+}
