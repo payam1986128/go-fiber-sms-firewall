@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	jwtware "github.com/gofiber/jwt/v3"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/handler"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/service"
@@ -46,7 +45,7 @@ func InitFiber(config *CouchbaseConfig) {
 	if jwtSecret == "" {
 		log.Fatal("JWT_SECRET must be set")
 	}
-	secure := app.Group("/api", jwtware.New(jwtware.Config{SigningKey: []byte(jwtSecret)}))
+	secure := app.Group("/api", JWTMiddleware())
 
 	secure.Post("/protections", firewallHandler.Receive)
 

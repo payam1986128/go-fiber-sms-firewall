@@ -1,19 +1,25 @@
 package service
 
 import (
+	"errors"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/presentation"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
 	"golang.org/x/crypto/bcrypt"
+	"os"
+	"time"
 )
 
 type UserService struct {
 	repository *repository.UserRepository
+	secret     string
 }
 
 func NewUserService(repository *repository.UserRepository) *UserService {
 	return &UserService{
 		repository: repository,
+		secret:     os.Getenv("JWT_SECRET"),
 	}
 }
 
@@ -28,6 +34,23 @@ func (service *UserService) RegisterUser(request *presentation.RegisterUserReque
 	return id.String(), err
 }
 
-func (service *UserService) LoginUser(username string, password string) (*presentation.VerificationResponse, error) {
-	return nil, nil
+func (service *UserService) LoginUser(username string, code string) (*presentation.VerificationResponse, error) {
+	user, err := service.repository.FindUserByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(code)) != nil {
+		return nil, errors.New("invalid credentials")
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": username,
+		"exp": time.Now().Add(24 * time.Hour).Unix(),
+	})
+
+	signed, err := token.SignedString([]byte(service.secret))
+	return &presentation.VerificationResponse{
+		AccessToken: signed,
+	}, err
 }
