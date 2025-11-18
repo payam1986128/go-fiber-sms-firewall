@@ -20,10 +20,14 @@ func NewSuspiciousWordService(repository *repository.SuspiciousWordRepository) *
 }
 
 func (service *SuspiciousWordService) GetSuspiciousWords(request *presentation.SuspiciousWordsFilterRequest) (*presentation.SuspiciousWordsResponse, error) {
+<<<<<<< HEAD
 	where := ""
 	if request.Filter != nil && len(*request.Filter) > 0 {
 		where += fmt.Sprintf("WHERE word LIKE '%%%s%%'", *request.Filter)
 	}
+=======
+	where := fmt.Sprintf("WHERE word LIKE '%%%s%%'", request.Filter)
+>>>>>>> origin/feature/initial
 	count, err := service.repository.CountSuspiciousWordsByQuery(where)
 	if err != nil {
 		return nil, err
