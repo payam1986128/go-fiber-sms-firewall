@@ -24,11 +24,11 @@ func NewSuspiciousCategoryRepository(config *config.CouchbaseConfig) *Suspicious
 
 func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByIds(ids []uuid.UUID) ([]entity.SuspiciousCategory, error) {
 	return repo.FindSuspiciousCategoriesByQuery(
-		fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` WHERE meta().id IN [%s]", repo.collection.Name(),
-			limiterConditionCollection, util.JoinQuotedUUIDs(ids, ",")))
+		fmt.Sprintf("WHERE meta().id IN [%s]", util.JoinQuotedUUIDs(ids, ",")))
 }
 
-func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByQuery(query string) ([]entity.SuspiciousCategory, error) {
+func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByQuery(whereClause string) ([]entity.SuspiciousCategory, error) {
+	query := fmt.Sprintf(fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousCategoriesCollection, whereClause))
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
 		return nil, err
@@ -42,6 +42,11 @@ func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByQuery(query 
 		result = append(result, record)
 	}
 	return result, nil
+}
+
+func (repo *SuspiciousCategoryRepository) CountSuspiciousCategoriesByQuery(whereClause string) (int, error) {
+	query := fmt.Sprintf(fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousCategoriesCollection, whereClause))
+	return countByQuery(repo.cluster, query)
 }
 
 func (repo *SuspiciousCategoryRepository) AddSuspiciousCategory(suspiciousCategory *entity.SuspiciousCategory) (uuid.UUID, error) {

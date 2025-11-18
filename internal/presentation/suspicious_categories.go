@@ -9,8 +9,8 @@ type (
 	SuspiciousCategoriesSearchRequest struct {
 		Pageable
 		Sortable
-		Name string `json:"name"`
-		Word string `json:"word"`
+		Name *string `json:"name"`
+		Word *string `json:"word"`
 	}
 
 	SuspiciousCategoriesResponse struct {
