@@ -22,11 +22,11 @@ type (
 	SmsSearchRequest struct {
 		Pageable
 		Sortable
-		Sender   string        `json:"sender"`
-		Receiver string        `json:"receiver"`
-		DateFrom time.Time     `json:"dateFrom"`
-		DateTo   time.Time     `json:"dateTo"`
-		Action   entity.Action `json:"action"`
+		Sender   *string        `json:"sender"`
+		Receiver *string        `json:"receiver"`
+		DateFrom *time.Time     `json:"dateFrom"`
+		DateTo   *time.Time     `json:"dateTo"`
+		Action   *entity.Action `json:"action"`
 	}
 
 	SmsRequest struct {

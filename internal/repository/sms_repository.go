@@ -51,6 +51,11 @@ func (repo *SmsRepository) FindSmsByQuery(query string) ([]entity.Sms, error) {
 	return result, nil
 }
 
+func (repo *SmsRepository) CountSmsByQuery(whereClause string) (int, error) {
+	query := fmt.Sprintf(fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), smsCollection, whereClause))
+	return countByQuery(repo.cluster, query)
+}
+
 func (repo *SmsRepository) AddSms(sms *entity.Sms) (uuid.UUID, error) {
 	sms.ID = uuid.New()
 	sms.ReceivedTime = time.Now()
