@@ -2,12 +2,13 @@ package presentation
 
 type (
 	Pageable struct {
-		Page     int `json:"page"`
-		PageSize int `json:"pageSize"`
+		Page     *int `json:"page"`
+		PageSize *int `json:"pageSize"`
 	}
 
 	Sortable struct {
-		Sort string `json:"sort"`
+		Sort *string `json:"sort"`
+		Dir  *string `json:"dir"`
 	}
 
 	ValidationErrorDto struct {
