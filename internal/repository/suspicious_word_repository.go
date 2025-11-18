@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/couchbase/gocb/v2"
 	"github.com/google/uuid"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
@@ -20,7 +21,8 @@ func NewSuspiciousWordRepository(config *config.CouchbaseConfig) *SuspiciousWord
 	}
 }
 
-func (repo *SuspiciousWordRepository) FindSuspiciousWordsByQuery(query string) ([]entity.SuspiciousWord, error) {
+func (repo *SuspiciousWordRepository) FindSuspiciousWordsByQuery(whereClause string) ([]entity.SuspiciousWord, error) {
+	query := fmt.Sprintf(fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousWordsCollection, whereClause))
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
 		return nil, err
@@ -34,6 +36,11 @@ func (repo *SuspiciousWordRepository) FindSuspiciousWordsByQuery(query string) (
 		result = append(result, record)
 	}
 	return result, nil
+}
+
+func (repo *SuspiciousWordRepository) CountSuspiciousWordsByQuery(whereClause string) (int, error) {
+	query := fmt.Sprintf(fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousWordsCollection, whereClause))
+	return countByQuery(repo.cluster, query)
 }
 
 func (repo *SuspiciousWordRepository) AddSuspiciousWords(suspiciousWords []entity.SuspiciousWord) error {

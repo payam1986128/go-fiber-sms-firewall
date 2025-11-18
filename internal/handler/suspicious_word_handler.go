@@ -37,11 +37,11 @@ func (handler *SuspiciousWordHandler) AddSuspiciousWords(ctx *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	id, err := handler.service.AddSuspiciousWords(&request)
+	err := handler.service.AddSuspiciousWords(&request)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
-	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{"id": id})
+	return ctx.Status(fiber.StatusNoContent).JSON(fiber.Map{})
 }
 
 func (handler *SuspiciousWordHandler) DeleteSuspiciousWords(ctx *fiber.Ctx) error {

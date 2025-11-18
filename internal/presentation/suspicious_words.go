@@ -12,7 +12,7 @@ type (
 	SuspiciousWordsFilterRequest struct {
 		Pageable
 		Sortable
-		Filter string `json:"filter"`
+		Filter *string `json:"filter"`
 	}
 
 	SuspiciousWordsRequest struct {
