@@ -45,3 +45,11 @@ type (
 		To   time.Time  `bson:"to"`
 	}
 )
+
+func (k *KeywordsFilter) GetAllKeywords() []string {
+	return append(k.Keywords, k.CategoryKeywords...)
+}
+
+func (k *KeywordsFilter) AddCategoryKeywords(anotherKeywords []string) {
+	k.CategoryKeywords = append(k.CategoryKeywords, anotherKeywords...)
+}
