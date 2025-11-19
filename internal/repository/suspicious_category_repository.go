@@ -22,12 +22,12 @@ func NewSuspiciousCategoryRepository(config *config.CouchbaseConfig) *Suspicious
 	}
 }
 
-func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByIds(ids []uuid.UUID) ([]entity.SuspiciousCategory, error) {
-	return repo.FindSuspiciousCategoriesByQuery(
+func (repo *SuspiciousCategoryRepository) FindAllByIds(ids []uuid.UUID) ([]entity.SuspiciousCategory, error) {
+	return repo.FindAllByQuery(
 		fmt.Sprintf("WHERE meta().id IN [%s]", util.JoinQuotedUUIDs(ids, ",")))
 }
 
-func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByQuery(whereClause string) ([]entity.SuspiciousCategory, error) {
+func (repo *SuspiciousCategoryRepository) FindAllByQuery(whereClause string) ([]entity.SuspiciousCategory, error) {
 	query := fmt.Sprintf(fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousCategoriesCollection, whereClause))
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
@@ -44,25 +44,25 @@ func (repo *SuspiciousCategoryRepository) FindSuspiciousCategoriesByQuery(whereC
 	return result, nil
 }
 
-func (repo *SuspiciousCategoryRepository) CountSuspiciousCategoriesByQuery(whereClause string) (int, error) {
-	query := fmt.Sprintf(fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousCategoriesCollection, whereClause))
+func (repo *SuspiciousCategoryRepository) CountByQuery(whereClause string) (int, error) {
+	query := fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousCategoriesCollection, whereClause)
 	return countByQuery(repo.cluster, query)
 }
 
-func (repo *SuspiciousCategoryRepository) AddSuspiciousCategory(suspiciousCategory *entity.SuspiciousCategory) (uuid.UUID, error) {
+func (repo *SuspiciousCategoryRepository) Insert(suspiciousCategory *entity.SuspiciousCategory) (uuid.UUID, error) {
 	suspiciousCategory.ID = uuid.New()
 	suspiciousCategory.DateTime = time.Now().String()
 	_, err := repo.collection.Insert(suspiciousCategory.ID.String(), suspiciousCategory, nil)
 	return suspiciousCategory.ID, err
 }
 
-func (repo *SuspiciousCategoryRepository) EditSuspiciousCategory(id uuid.UUID, suspiciousCategory *entity.SuspiciousCategory) error {
+func (repo *SuspiciousCategoryRepository) Update(id uuid.UUID, suspiciousCategory *entity.SuspiciousCategory) error {
 	suspiciousCategory.ID = id
 	_, err := repo.collection.Upsert(id.String(), suspiciousCategory, nil)
 	return err
 }
 
-func (repo *SuspiciousCategoryRepository) DeleteSuspiciousCategory(id uuid.UUID) error {
+func (repo *SuspiciousCategoryRepository) Delete(id uuid.UUID) error {
 	_, err := repo.collection.Remove(id.String(), nil)
 	return err
 }

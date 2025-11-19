@@ -24,7 +24,7 @@ func (service SuspiciousCategoryService) GetSuspiciousCategories(request *presen
 	if request.Word != nil && len(*request.Word) > 0 {
 		where += fmt.Sprintf("and ANY w IN words SATISFIES w like '%%%s%%' END", *request.Word)
 	}
-	count, err := service.repository.CountSuspiciousCategoriesByQuery(where)
+	count, err := service.repository.CountByQuery(where)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (service SuspiciousCategoryService) GetSuspiciousCategories(request *presen
 	if request.Page != nil && *request.Page > 0 {
 		where += fmt.Sprintf(" OFFSET %d", *request.Page)
 	}
-	suspiciousCategories, err := service.repository.FindSuspiciousCategoriesByQuery(where)
+	suspiciousCategories, err := service.repository.FindAllByQuery(where)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (service SuspiciousCategoryService) GetSuspiciousCategories(request *presen
 
 func (service SuspiciousCategoryService) AddSuspiciousCategory(request *presentation.SuspiciousCategoryWordsRequest) (string, error) {
 	suspiciousCategory := mapper.ToSuspiciousCategory(*request)
-	id, err := service.repository.AddSuspiciousCategory(&suspiciousCategory)
+	id, err := service.repository.Insert(&suspiciousCategory)
 	if err != nil {
 		return "", err
 	}
@@ -68,7 +68,7 @@ func (service SuspiciousCategoryService) EditSuspiciousCategory(id string, reque
 		return err
 	}
 	suspiciousCategory := mapper.ToSuspiciousCategory(*request)
-	return service.repository.EditSuspiciousCategory(ID, &suspiciousCategory)
+	return service.repository.Update(ID, &suspiciousCategory)
 }
 
 func (service SuspiciousCategoryService) DeleteSuspiciousCategory(id string) error {
@@ -76,5 +76,5 @@ func (service SuspiciousCategoryService) DeleteSuspiciousCategory(id string) err
 	if err != nil {
 		return err
 	}
-	return service.repository.DeleteSuspiciousCategory(ID)
+	return service.repository.Delete(ID)
 }

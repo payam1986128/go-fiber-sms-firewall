@@ -64,8 +64,8 @@ type (
 	LimiterConditionsSearchRequest struct {
 		Pageable
 		Sortable
-		State  bool   `json:"state"`
-		Filter string `json:"filter"`
+		State  *bool   `json:"state"`
+		Filter *string `json:"filter"`
 	}
 
 	LimiterConditionsResponse struct {
@@ -75,8 +75,8 @@ type (
 	}
 
 	LimiterConditionStateRequest struct {
-		IDs   []uuid.UUID `json:"ids"`
-		State *bool       `json:"state"`
+		IDs   []string `json:"ids"`
+		State *bool    `json:"state"`
 	}
 )
 

@@ -20,15 +20,11 @@ func NewSuspiciousWordService(repository *repository.SuspiciousWordRepository) *
 }
 
 func (service *SuspiciousWordService) GetSuspiciousWords(request *presentation.SuspiciousWordsFilterRequest) (*presentation.SuspiciousWordsResponse, error) {
-<<<<<<< HEAD
 	where := ""
 	if request.Filter != nil && len(*request.Filter) > 0 {
 		where += fmt.Sprintf("WHERE word LIKE '%%%s%%'", *request.Filter)
 	}
-=======
-	where := fmt.Sprintf("WHERE word LIKE '%%%s%%'", request.Filter)
->>>>>>> origin/feature/initial
-	count, err := service.repository.CountSuspiciousWordsByQuery(where)
+	count, err := service.repository.CountAllByQuery(where)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +42,7 @@ func (service *SuspiciousWordService) GetSuspiciousWords(request *presentation.S
 	if request.Page != nil && *request.Page > 0 {
 		where += fmt.Sprintf(" OFFSET %d", *request.Page)
 	}
-	suspiciousWords, err := service.repository.FindSuspiciousWordsByQuery(where)
+	suspiciousWords, err := service.repository.FindAllByQuery(where)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +60,7 @@ func (service *SuspiciousWordService) AddSuspiciousWords(request *presentation.S
 			Word: word,
 		})
 	}
-	return service.repository.AddSuspiciousWords(suspiciousWords)
+	return service.repository.Insert(suspiciousWords)
 }
 
 func (service *SuspiciousWordService) DeleteSuspiciousWords(id string) error {
@@ -72,5 +68,5 @@ func (service *SuspiciousWordService) DeleteSuspiciousWords(id string) error {
 	if err != nil {
 		return err
 	}
-	return service.repository.DeleteSuspiciousWord(ID)
+	return service.repository.Delete(ID)
 }

@@ -21,7 +21,7 @@ func NewSuspiciousWordRepository(config *config.CouchbaseConfig) *SuspiciousWord
 	}
 }
 
-func (repo *SuspiciousWordRepository) FindSuspiciousWordsByQuery(whereClause string) ([]entity.SuspiciousWord, error) {
+func (repo *SuspiciousWordRepository) FindAllByQuery(whereClause string) ([]entity.SuspiciousWord, error) {
 	query := fmt.Sprintf(fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousWordsCollection, whereClause))
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
@@ -38,12 +38,12 @@ func (repo *SuspiciousWordRepository) FindSuspiciousWordsByQuery(whereClause str
 	return result, nil
 }
 
-func (repo *SuspiciousWordRepository) CountSuspiciousWordsByQuery(whereClause string) (int, error) {
+func (repo *SuspiciousWordRepository) CountAllByQuery(whereClause string) (int, error) {
 	query := fmt.Sprintf(fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), suspiciousWordsCollection, whereClause))
 	return countByQuery(repo.cluster, query)
 }
 
-func (repo *SuspiciousWordRepository) AddSuspiciousWords(suspiciousWords []entity.SuspiciousWord) error {
+func (repo *SuspiciousWordRepository) Insert(suspiciousWords []entity.SuspiciousWord) error {
 	for _, suspiciousWord := range suspiciousWords {
 		suspiciousWord.ID = uuid.New()
 		suspiciousWord.DateTime = time.Now()
@@ -53,7 +53,7 @@ func (repo *SuspiciousWordRepository) AddSuspiciousWords(suspiciousWords []entit
 	return nil
 }
 
-func (repo *SuspiciousWordRepository) DeleteSuspiciousWord(id uuid.UUID) error {
+func (repo *SuspiciousWordRepository) Delete(id uuid.UUID) error {
 	_, err := repo.collection.Remove(id.String(), nil)
 	return err
 }

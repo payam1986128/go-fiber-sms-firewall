@@ -54,7 +54,7 @@ func (service SmsService) GetSms(request *presentation.SmsSearchRequest) (*prese
 	if request.Page != nil && *request.Page > 0 {
 		where += fmt.Sprintf(" OFFSET %d", *request.Page)
 	}
-	sms, err := service.repository.FindSmsByQuery(where)
+	sms, err := service.repository.FindAllByQuery(where)
 	if err != nil {
 		return nil, err
 	}

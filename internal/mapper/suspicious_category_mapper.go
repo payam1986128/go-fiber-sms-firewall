@@ -27,7 +27,7 @@ func ToSuspiciousCategoryDtos(source []entity.SuspiciousCategory) []presentation
 
 func ToSuspiciousCategory(source presentation.SuspiciousCategoryWordsRequest) entity.SuspiciousCategory {
 	return entity.SuspiciousCategory{
-		Name:  source.Name,
+		Name:  *source.Name,
 		Words: source.Words,
 	}
 }

@@ -21,21 +21,21 @@ func NewSmsRepository(config *config.CouchbaseConfig) *SmsRepository {
 	}
 }
 
-func (repo *SmsRepository) CountSms(sender string, start time.Time, end time.Time) (int, error) {
+func (repo *SmsRepository) Count(sender string, start time.Time, end time.Time) (int, error) {
 	return countByQuery(repo.cluster,
 		fmt.Sprintf("select count(meta().id) from `%s`.`_default`.`%s` where sender = %s and receivedTime between %s and %s",
 			repo.collection.Name(), smsCollection, sender, start.Format(time.RFC3339), end.Format(time.RFC3339)),
 	)
 }
 
-func (repo *SmsRepository) CountSmsByAppliedFilterId(conditionId uuid.UUID) (int, error) {
+func (repo *SmsRepository) CountByAppliedFilterId(conditionId uuid.UUID) (int, error) {
 	return countByQuery(repo.cluster,
 		fmt.Sprintf("select count(meta().id) from `%s`.`_default`.`%s` where appliedFilterId = %s",
 			repo.collection.Name(), smsCollection, conditionId),
 	)
 }
 
-func (repo *SmsRepository) FindSmsByQuery(query string) ([]entity.Sms, error) {
+func (repo *SmsRepository) FindAllByQuery(query string) ([]entity.Sms, error) {
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
 		return nil, err

@@ -30,12 +30,12 @@ func (service *UserService) RegisterUser(request *presentation.RegisterUserReque
 		Password: string(hashed),
 		Active:   true,
 	}
-	id, err := service.repository.AddUser(user)
+	id, err := service.repository.Insert(user)
 	return id.String(), err
 }
 
 func (service *UserService) LoginUser(username string, code string) (*presentation.VerificationResponse, error) {
-	user, err := service.repository.FindUserByUsername(username)
+	user, err := service.repository.FindByUsername(username)
 	if err != nil {
 		return nil, err
 	}

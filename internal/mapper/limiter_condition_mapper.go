@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func ToLimiterConditionResponse(limiterCondition entity.LimiterCondition) presentation.LimiterConditionResponse {
+func ToLimiterConditionResponse(limiterCondition *entity.LimiterCondition) presentation.LimiterConditionResponse {
 	return presentation.LimiterConditionResponse{
 		Name:       limiterCondition.Name,
 		Priority:   limiterCondition.Priority,
@@ -34,16 +34,13 @@ func ToBriefLimiterConditionDtos(limiterConditions []entity.LimiterCondition) []
 	return result
 }
 
-func ToLimiterCondition(request presentation.LimiterConditionRequest) entity.LimiterCondition {
-	return entity.LimiterCondition{
-		Name:        request.Name,
-		Priority:    request.Priority,
-		Action:      request.Action,
-		Filters:     toFilters(request.Filters),
-		TimeLimits:  toTimeLimits(request.TimeLimits),
-		CreatedTime: time.Now(),
-		Active:      true,
-	}
+func ToLimiterCondition(request presentation.LimiterConditionRequest, target *entity.LimiterCondition) {
+	target.Name = *request.Name
+	target.Priority = *request.Priority
+	target.Action = *request.Action
+	target.Filters = toFilters(*request.Filters)
+	target.TimeLimits = toTimeLimits(request.TimeLimits)
+	target.Active = true
 }
 
 func toFiltersDto(filters entity.Filters) presentation.FiltersDto {
@@ -87,8 +84,8 @@ func toRateFilterDto(filter *entity.RateFilter) *presentation.RateFilterDto {
 		return nil
 	}
 	return &presentation.RateFilterDto{
-		IntervalMinutes: filter.IntervalMinutes,
-		Threshold:       filter.Threshold,
+		IntervalMinutes: &filter.IntervalMinutes,
+		Threshold:       &filter.Threshold,
 	}
 }
 
@@ -97,8 +94,8 @@ func toRateFilter(filter *presentation.RateFilterDto) *entity.RateFilter {
 		return nil
 	}
 	return &entity.RateFilter{
-		IntervalMinutes: filter.IntervalMinutes,
-		Threshold:       filter.Threshold,
+		IntervalMinutes: *filter.IntervalMinutes,
+		Threshold:       *filter.Threshold,
 	}
 }
 
@@ -130,11 +127,13 @@ func toTimeLimitsDto(limits []entity.TimeLimit) []presentation.TimeLimitDto {
 	}
 	var result []presentation.TimeLimitDto
 	for _, limit := range limits {
+		to := limit.To.String()
 		limitDto := presentation.TimeLimitDto{
-			To: limit.To.String(),
+			To: &to,
 		}
+		from := limit.From.String()
 		if limit.From != nil {
-			limitDto.From = limit.From.String()
+			limitDto.From = &from
 		}
 		result = append(result, limitDto)
 	}
@@ -149,9 +148,9 @@ func toTimeLimits(dtos []presentation.TimeLimitDto) []entity.TimeLimit {
 	result := make([]entity.TimeLimit, len(dtos))
 	for _, dto := range dtos {
 		var limit = entity.TimeLimit{}
-		from, _ := time.Parse(layout, dto.From)
+		from, _ := time.Parse(layout, *dto.From)
 		limit.From = &from
-		to, _ := time.Parse(layout, dto.To)
+		to, _ := time.Parse(layout, *dto.To)
 		limit.To = to
 		result = append(result, limit)
 	}

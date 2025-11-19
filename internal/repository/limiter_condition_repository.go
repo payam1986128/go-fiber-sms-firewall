@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/util"
 	"time"
 )
 
@@ -22,11 +23,21 @@ func NewLimiterConditionRepository(config *config.CouchbaseConfig) *LimiterCondi
 }
 
 func (repo *LimiterConditionRepository) FindActiveLimiterConditions() ([]entity.LimiterCondition, error) {
-	return repo.FindLimiterConditionsByQuery(
-		fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` WHERE active = true order by priority", repo.collection.Name(), limiterConditionCollection))
+	return repo.FindAllByQuery("WHERE active = true order by priority")
 }
 
-func (repo *LimiterConditionRepository) FindLimiterConditionsByQuery(query string) ([]entity.LimiterCondition, error) {
+func (repo *LimiterConditionRepository) FindAllByIds(ids []uuid.UUID) ([]entity.LimiterCondition, error) {
+	return repo.FindAllByQuery(
+		fmt.Sprintf("WHERE meta().id IN [%s]", util.JoinQuotedUUIDs(ids, ",")))
+}
+
+func (repo *LimiterConditionRepository) CountByQuery(whereClause string) (int, error) {
+	query := fmt.Sprintf("SELECT count(meta().id) FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), limiterConditionCollection, whereClause)
+	return countByQuery(repo.cluster, query)
+}
+
+func (repo *LimiterConditionRepository) FindAllByQuery(whereClause string) ([]entity.LimiterCondition, error) {
+	query := fmt.Sprintf(fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` %s", repo.collection.Name(), limiterConditionCollection, whereClause))
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
 		return nil, err
@@ -42,7 +53,7 @@ func (repo *LimiterConditionRepository) FindLimiterConditionsByQuery(query strin
 	return result, nil
 }
 
-func (repo *LimiterConditionRepository) GetLimiterConditionByID(id uuid.UUID) (*entity.LimiterCondition, error) {
+func (repo *LimiterConditionRepository) GetByID(id uuid.UUID) (*entity.LimiterCondition, error) {
 	get, err := repo.collection.Get(id.String(), nil)
 	if err != nil {
 		return nil, err
@@ -54,7 +65,7 @@ func (repo *LimiterConditionRepository) GetLimiterConditionByID(id uuid.UUID) (*
 	return &result, nil
 }
 
-func (repo *LimiterConditionRepository) AddLimiterCondition(limiterCondition *entity.LimiterCondition) (uuid.UUID, error) {
+func (repo *LimiterConditionRepository) Insert(limiterCondition *entity.LimiterCondition) (uuid.UUID, error) {
 	limiterCondition.ID = uuid.New()
 	limiterCondition.CreatedTime = time.Now()
 	limiterCondition.Active = true
@@ -62,13 +73,13 @@ func (repo *LimiterConditionRepository) AddLimiterCondition(limiterCondition *en
 	return limiterCondition.ID, err
 }
 
-func (repo *LimiterConditionRepository) EditLimiterCondition(id uuid.UUID, limiterCondition *entity.LimiterCondition) error {
+func (repo *LimiterConditionRepository) Update(id uuid.UUID, limiterCondition *entity.LimiterCondition) error {
 	limiterCondition.ID = id
 	_, err := repo.collection.Upsert(id.String(), limiterCondition, nil)
 	return err
 }
 
-func (repo *LimiterConditionRepository) DeleteLimiterCondition(id uuid.UUID) error {
+func (repo *LimiterConditionRepository) Delete(id uuid.UUID) error {
 	_, err := repo.collection.Remove(id.String(), nil)
 	return err
 }

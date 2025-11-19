@@ -20,7 +20,7 @@ func NewUserRepository(config *config.CouchbaseConfig) *UserRepository {
 	}
 }
 
-func (repo *UserRepository) FindUserByUsername(username string) (*entity.User, error) {
+func (repo *UserRepository) FindByUsername(username string) (*entity.User, error) {
 	query := fmt.Sprintf("SELECT * FROM `%s`.`_default`.`%s` WHERE username = %s", repo.collection.Name(), userCollection, username)
 	data, err := repo.cluster.Query(query, nil)
 	if err != nil {
@@ -38,7 +38,7 @@ func (repo *UserRepository) FindUserByUsername(username string) (*entity.User, e
 	return &user, nil
 }
 
-func (repo *UserRepository) AddUser(user *entity.User) (uuid.UUID, error) {
+func (repo *UserRepository) Insert(user *entity.User) (uuid.UUID, error) {
 	user.ID = uuid.New()
 	user.Active = true
 	_, err := repo.collection.Insert(user.ID.String(), user, nil)
