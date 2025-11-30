@@ -1,24 +1,26 @@
 package config
 
 import (
+	"github.com/couchbase/gocb/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/handler"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/invoker"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/service"
 	"log"
 	"os"
 )
 
-func InitFiber(config *CouchbaseConfig) {
+func InitFiber(cluster *gocb.Cluster, bucket *gocb.Bucket) {
 	app := fiber.New()
 	app.Use(logger.New())
 
-	userRepository := repository.NewUserRepository(config)
-	smsRepository := repository.NewSmsRepository(config)
-	limiterConditionRepository := repository.NewLimiterConditionRepository(config)
-	suspiciousWordRepository := repository.NewSuspiciousWordRepository(config)
-	suspiciousCategoryRepository := repository.NewSuspiciousCategoryRepository(config)
+	userRepository := repository.NewUserRepository(cluster, bucket)
+	smsRepository := repository.NewSmsRepository(cluster, bucket)
+	limiterConditionRepository := repository.NewLimiterConditionRepository(cluster, bucket)
+	suspiciousWordRepository := repository.NewSuspiciousWordRepository(cluster, bucket)
+	suspiciousCategoryRepository := repository.NewSuspiciousCategoryRepository(cluster, bucket)
 
 	userService := service.NewUserService(userRepository)
 	smsService := service.NewSmsService(smsRepository)
@@ -26,7 +28,7 @@ func InitFiber(config *CouchbaseConfig) {
 	suspiciousCategoryService := service.NewSuspiciousCategoryService(suspiciousCategoryRepository)
 	phoneNumberService := service.NewPhoneNumberService()
 	limiterConditionService := service.NewLimiterConditionService(limiterConditionRepository, suspiciousCategoryRepository, smsRepository, phoneNumberService)
-	transceiverService := service.NewTransceiverService(smsRepository, phoneNumberService, NewSmscClient())
+	transceiverService := service.NewTransceiverService(smsRepository, phoneNumberService, invoker.NewSmscClient())
 	rateLimiterService := service.NewRateLimiterService(smsRepository)
 	firewallService := service.NewFirewallService(smsRepository, rateLimiterService, limiterConditionService)
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/couchbase/gocb/v2"
 	"github.com/google/uuid"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/util"
 	"time"
@@ -15,10 +14,10 @@ type LimiterConditionRepository struct {
 	collection *gocb.Collection
 }
 
-func NewLimiterConditionRepository(config *config.CouchbaseConfig) *LimiterConditionRepository {
+func NewLimiterConditionRepository(cluster *gocb.Cluster, bucket *gocb.Bucket) *LimiterConditionRepository {
 	return &LimiterConditionRepository{
-		cluster:    config.Cluster,
-		collection: config.Bucket.Collection(limiterConditionCollection),
+		cluster:    cluster,
+		collection: bucket.Collection(limiterConditionCollection),
 	}
 }
 

@@ -1,4 +1,4 @@
-package config
+package invoker
 
 import (
 	"github.com/go-resty/resty/v2"

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/couchbase/gocb/v2"
 	"github.com/google/uuid"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/util"
 	"time"
@@ -15,10 +14,10 @@ type SuspiciousCategoryRepository struct {
 	collection *gocb.Collection
 }
 
-func NewSuspiciousCategoryRepository(config *config.CouchbaseConfig) *SuspiciousCategoryRepository {
+func NewSuspiciousCategoryRepository(cluster *gocb.Cluster, bucket *gocb.Bucket) *SuspiciousCategoryRepository {
 	return &SuspiciousCategoryRepository{
-		cluster:    config.Cluster,
-		collection: config.Bucket.Collection(suspiciousCategoriesCollection),
+		cluster:    cluster,
+		collection: bucket.Collection(suspiciousCategoriesCollection),
 	}
 }
 

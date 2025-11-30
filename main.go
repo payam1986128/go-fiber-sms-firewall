@@ -11,10 +11,10 @@ func main() {
 		log.Println(".env not found, relying on environment variables")
 	}
 
-	couchbaseConfig, err := config.InitCouchbase()
+	cluster, bucket, err := config.InitCouchbase()
 	if err != nil {
 		log.Fatalf("couchbase init: %v", err)
 	}
 
-	config.InitFiber(couchbaseConfig)
+	config.InitFiber(cluster, bucket)
 }

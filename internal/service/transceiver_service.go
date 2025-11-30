@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
+	"github.com/payam1986128/go-fiber-sms-firewall/internal/invoker"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/presentation"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/repository"
 	"time"
@@ -11,10 +11,10 @@ import (
 type TransceiverService struct {
 	smsRepository      *repository.SmsRepository
 	phoneNumberService *PhoneNumberService
-	smscClient         *config.SmscClient
+	smscClient         *invoker.SmscClient
 }
 
-func NewTransceiverService(smsRepository *repository.SmsRepository, phoneNumberService *PhoneNumberService, smscClient *config.SmscClient) *TransceiverService {
+func NewTransceiverService(smsRepository *repository.SmsRepository, phoneNumberService *PhoneNumberService, smscClient *invoker.SmscClient) *TransceiverService {
 	return &TransceiverService{
 		smsRepository:      smsRepository,
 		phoneNumberService: phoneNumberService,

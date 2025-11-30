@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/couchbase/gocb/v2"
 	"github.com/google/uuid"
-	"github.com/payam1986128/go-fiber-sms-firewall/internal/config"
 	"github.com/payam1986128/go-fiber-sms-firewall/internal/entity"
 	"time"
 )
@@ -14,10 +13,10 @@ type SmsRepository struct {
 	collection *gocb.Collection
 }
 
-func NewSmsRepository(config *config.CouchbaseConfig) *SmsRepository {
+func NewSmsRepository(cluster *gocb.Cluster, bucket *gocb.Bucket) *SmsRepository {
 	return &SmsRepository{
-		cluster:    config.Cluster,
-		collection: config.Bucket.Collection(smsCollection),
+		cluster:    cluster,
+		collection: bucket.Collection(smsCollection),
 	}
 }
 
